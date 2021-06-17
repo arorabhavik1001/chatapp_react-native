@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useState } from "react";
 import { View, StyleSheet, KeyboardAvoidingView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Button, Input, Text } from "react-native-elements";
-import {auth} from "../firebase";
+import { auth } from "../firebase";
 
 const RegisterSceen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -10,12 +10,17 @@ const RegisterSceen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const registerUser = () => {
-    auth.createUserWithEmailAndPassword(email, password).then((authUser) => {
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((authUser) => {
         authUser.user.updateProfile({
-            displayName: name,
-            photoURL: imgUrl || "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
-        })
-    }).catch(err => alert(err.message))
+          displayName: name,
+          photoURL:
+            imgUrl ||
+            "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
+        });
+      })
+      .catch((err) => alert(err.message));
   };
 
   return (
@@ -53,7 +58,7 @@ const RegisterSceen = ({ navigation }) => {
           onSubmitEditing={registerUser}
         />
       </View>
-      <Button 
+      <Button
         title="Register"
         onPress={registerUser}
         raised

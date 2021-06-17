@@ -29,7 +29,12 @@ const Login = ({ navigation }) => {
         });
       })
       .catch((err) => {
-        if(err.code==="auth/user-not-found"){alert(`Wrong Credetials. If you haven't created an account, please register`)}});
+        if (err.code === "auth/user-not-found") {
+          alert(
+            `Wrong Credetials. If you haven't created an account, please register`
+          );
+        }
+      });
   };
   const taketoReg = () => {
     navigation.navigate("Register");
