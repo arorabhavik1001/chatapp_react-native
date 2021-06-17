@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { Button, Input, Text } from "react-native-elements";
 
 const AddChat = ({ navigation }) => {
