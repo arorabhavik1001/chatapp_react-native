@@ -1,13 +1,15 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "./Screens/LoginScreen";
 import Home from "./Screens/Home";
+import AddChat from "./Screens/AddChat";
 import RegisterSceen from "./Screens/RegisterSceen";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { SimpleLineIcons, AntDesign } from "@expo/vector-icons";
 import { auth } from "./firebase";
 import { navigationRef } from "./RootNavigation";
 import * as RootNavigation from "./RootNavigation";
@@ -18,24 +20,13 @@ const globalScreenStyles = {
   headerStyle: { backgroundColor: "#38d49d" },
   headerTitleStyle: { color: "#0b5139" },
   headerTintColor: "#2C5F2DFF",
+  headerTitleAlign: "center",
 };
 
 export default function App() {
-  const signout = () => {
-    auth
-      .signOut()
-      .then(function () {
-        // Sign-out successful.
-        RootNavigation.replace("Login");
-        console.log("Sign-out successful");
-        setTimeout(() => {
-          alert("You've been successfully signed out.");
-        }, 650);
-      })
-      .catch(function (error) {
-        // An error happened.
-        console.log(error);
-      });
+  
+  const addChat = () => {
+    RootNavigation.navigate("AddChat");
   };
   return (
     <NavigationContainer ref={navigationRef}>
@@ -46,19 +37,41 @@ export default function App() {
           component={Home}
           options={{
             headerRight: () => (
-              <MaterialCommunityIcons
-                name="logout"
-                size={24}
-                color="#0b5139"
-                onPress={signout}
-                style={{ marginRight: 10 }}
-              />
+              <View
+                style={{
+                  marginLeft: 20,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: 80,
+                  marginRight: 20,
+                }}
+              >
+                <TouchableOpacity>
+                  <AntDesign
+                    name="camerao"
+                    size={24}
+                    color="#0b5139"
+                    // style={{ marginRight: 10 }}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <SimpleLineIcons
+                    name="pencil"
+                    onPress={addChat}
+                    size={24}
+                    color="#0b5139"
+                    // style={{ marginRight: 10 }}
+                  />
+                </TouchableOpacity>
+                
+              </View>
             ),
           }}
         />
         <Stack.Screen name="Register" component={RegisterSceen} />
+        <Stack.Screen name="AddChat" component={AddChat} />
       </Stack.Navigator>
-      <StatusBar style="light" />
+      <StatusBar style="auto" />
     </NavigationContainer>
   );
 }
