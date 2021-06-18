@@ -8,6 +8,7 @@ import Login from "./Screens/LoginScreen";
 import Home from "./Screens/Home";
 import AddChat from "./Screens/AddChat";
 import RegisterSceen from "./Screens/RegisterSceen";
+import Chat from "./Screens/Chat";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SimpleLineIcons, AntDesign } from "@expo/vector-icons";
 import { auth } from "./firebase";
@@ -16,12 +17,12 @@ import * as RootNavigation from "./RootNavigation";
 
 const Stack = createStackNavigator();
 
-const globalScreenStyles = {
-  headerStyle: { backgroundColor: "#38d49d" },
-  headerTitleStyle: { color: "#0b5139" },
-  headerTintColor: "#2C5F2DFF",
-  headerTitleAlign: "center",
-};
+  const globalScreenStyles = {
+    headerStyle: { backgroundColor: "#38d49d" },
+    headerTitleStyle: { color: "#0b5139" },
+    headerTintColor: "#2C5F2DFF",
+    headerTitleAlign: "center",
+  };
 
 export default function App() {
   
@@ -70,6 +71,7 @@ export default function App() {
         />
         <Stack.Screen name="Register" component={RegisterSceen} />
         <Stack.Screen name="AddChat" component={AddChat} />
+        <Stack.Screen name="Chat" component={Chat} />
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>

@@ -32,7 +32,6 @@ const RegisterSceen = ({ navigation }) => {
       <View style={styles.inputContainer}>
         <Input
           placeholder="Full Name"
-          autoFocus
           type="text"
           value={name}
           onChangeText={(text) => setName(text)}

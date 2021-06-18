@@ -5,6 +5,7 @@ import {
   View,
   KeyboardAvoidingView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { Button, Input, Image } from "react-native-elements";
 import { StatusBar } from "expo-status-bar";
@@ -20,19 +21,15 @@ const Login = ({ navigation }) => {
   const login = () => {
     auth
       .signInWithEmailAndPassword(email, password)
-      .then((authUser) => {
-        authUser.user.updateProfile({
-          displayName: name,
-          photoURL:
-            imgUrl ||
-            "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
-        });
-      })
       .catch((err) => {
         if (err.code === "auth/user-not-found") {
           alert(
             `Wrong Credetials. If you haven't created an account, please register`
           );
+        } 
+        // else if (err.code === "Can't find variable: imgUrl") {console.log(console.log(`ignore error img url`))}
+        else {
+          alert(err.message)
         }
       });
   };
@@ -69,7 +66,7 @@ const Login = ({ navigation }) => {
       />
       <StatusBar style="light" />
       {isMatterShowing ? (
-        <KeyboardAvoidingView style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} behavior={Platform.os === "ios"?"padding":"height"}>
           <Image
             source={{
               uri: "https://i.ibb.co/2g8vFfb/logomain.png",
@@ -81,7 +78,6 @@ const Login = ({ navigation }) => {
             <Input
               style={styles.input}
               placeholder="Email"
-              autoFocus
               type="Email"
               value={email}
               onChangeText={(text) => setEmail(text)}
@@ -91,7 +87,6 @@ const Login = ({ navigation }) => {
                 color: "#1a8f66",
               }}
             />
-
             <Input
               placeholder="Password"
               secureTextEntry={true}
@@ -155,6 +150,7 @@ const styles = StyleSheet.create({
   },
   button2: {
     marginTop: 15,
+    marginBottom: 35,
     width: 200,
   },
   btitle: {
