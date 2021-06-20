@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useRef } from "react";
+import React, { useLayoutEffect, useState, useRef, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -11,15 +11,18 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import { Avatar, Text } from "react-native-elements";
+import { Avatar, Text, Icon, Input } from "react-native-elements";
 import { AntDesign, FontAwesome, Ionicons, Feather } from "@expo/vector-icons";
-// import * as firebase from "firebase";
+import * as firebase from "firebase";
 import { db, auth } from "../firebase";
+import * as ImagePicker from "expo-image-picker";
 
 const Chat = ({ navigation, route }) => {
   const scrollViewRef = useRef();
   const [chatInput, setChatInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const [messsages, setMesssages] = useState([]);
+  const [imgUrl, setImgUrl] = useState("");
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Chat",
@@ -34,9 +37,11 @@ const Chat = ({ navigation, route }) => {
         >
           <Avatar
             source={{
-              uri: messages[0]?.data.photoURL || "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
+              uri:
+                messsages[0]?.data.photoURL ||
+                "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
             }}
-            rouded
+            rounded
           />
           <Text
             style={{
@@ -100,6 +105,54 @@ const Chat = ({ navigation, route }) => {
 
     return unsubscribe;
   }, [route]);
+  useEffect(() => {
+    const another = db
+      .collection("chats")
+      .doc(route.params.id)
+      .collection("messages")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) =>
+      setMesssages(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        )
+      );
+  }, [route]);
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
+        }
+      }
+    })();
+  }, []);
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImgUrl(result.uri);
+    }
+
+    db.collection("chats").doc(route.params.id).collection("messages").add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      message: imgUrl, //try removing message and using another
+      displayName: auth.currentUser.displayName,
+      email: auth.currentUser.email,
+      photoURL: auth.currentUser.photoURL,
+    });
+  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
@@ -111,26 +164,52 @@ const Chat = ({ navigation, route }) => {
           <>
             {/* <ScrollView contentContainerStyle={{paddingTop: 15}}> */}
             <ScrollView
-      ref={scrollViewRef}
-      onContentSizeChange={() => scrollViewRef.current.scrollToEnd()}
-      contentContainerStyle={{paddingTop: 15}}
-    >
+              ref={scrollViewRef}
+              onContentSizeChange={() => scrollViewRef.current.scrollToEnd()}
+              contentContainerStyle={{ paddingTop: 15 }}
+            >
               {messages.map(({ id, data }) =>
                 data.email === auth.currentUser.email ? (
                   <View key={id} style={styles.reciever}>
                     <Text style={styles.receiverText}>{data.message}</Text>
-                    <Avatar containerStyle={{position:"absolute", bottom: -15, right:-5}} position="absolute" bottom={-15} right={-5} size={30} source={{ uri: data.photoURL }} rounded />
+                    <Avatar
+                      containerStyle={{
+                        position: "absolute",
+                        bottom: -15,
+                        right: -5,
+                      }}
+                      position="absolute"
+                      bottom={-15}
+                      right={-5}
+                      size={30}
+                      source={{ uri: data.photoURL }}
+                      rounded
+                    />
                   </View>
                 ) : (
                   <View key={id} style={styles.sender}>
-                    <Avatar  containerStyle={{position:"absolute", bottom: -15, left:-5}} position="absolute" bottom={-15} left={-5} source={{ uri: data.photoURL }} size={30} rounded />
+                    <Avatar
+                      containerStyle={{
+                        position: "absolute",
+                        bottom: -15,
+                        left: -5,
+                      }}
+                      position="absolute"
+                      bottom={-15}
+                      left={-5}
+                      source={{ uri: data.photoURL }}
+                      size={30}
+                      rounded
+                    />
                     <Text style={styles.senderText}>{data.message}</Text>
                     <Text style={styles.senderName}>{data.displayName}</Text>
                   </View>
                 )
               )}
             </ScrollView>
+            
             <View style={styles.footer}>
+              <Ionicons name="attach" size={24} color="#0b5139" onPress={pickImage} />
               <TextInput
                 placeholder="Type a message..."
                 style={styles.input}

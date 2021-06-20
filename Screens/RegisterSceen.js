@@ -1,10 +1,12 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState, useEffect } from "react";
 import { View, StyleSheet, KeyboardAvoidingView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Button, Input, Text } from "react-native-elements";
 import { auth } from "../firebase";
+import * as ImagePicker from "expo-image-picker";
 
 const RegisterSceen = ({ navigation }) => {
+  const [image, setImage] = useState(null);
   const [name, setName] = useState("");
   const [email, setMail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +24,31 @@ const RegisterSceen = ({ navigation }) => {
       })
       .catch((err) => alert(err.message));
   };
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
+        }
+      }
+    })();
+  }, []);
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImgUrl(result.uri);
+    }
+  };
   return (
     <KeyboardAvoidingView style={styles.container}>
       <StatusBar style="light" />
@@ -49,12 +75,16 @@ const RegisterSceen = ({ navigation }) => {
           value={password}
           onChangeText={(text) => setPassword(text)}
         />
-        <Input
+        {/* <Input
           placeholder="Profile Picture url (optional)"
           type="text"
           value={imgUrl}
           onChangeText={(text) => setImgUrl(text)}
           onSubmitEditing={registerUser}
+        /> */}
+        <Button 
+          title="Choose profile picture"
+          onPress={pickImage}
         />
       </View>
       <Button

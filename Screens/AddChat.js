@@ -8,7 +8,7 @@ const AddChat = ({ navigation }) => {
   const [input, setInput] = useState("");
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Add a new chat",
+      title: "Add a new chat group",
     });
   }, [navigation]);
   const createChat = async () => {
@@ -31,7 +31,7 @@ const AddChat = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Input
-        placeholder="Enter chat name"
+        placeholder="Enter group name"
         placeholderTextColor="#0b51397e"
         value={input}
         style={{ marginTop: 20 }}
