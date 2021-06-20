@@ -29,6 +29,8 @@ export default function App() {
   const addChat = () => {
     RootNavigation.navigate("AddChat");
   };
+  console.disableYellowBox = true;
+
   return (
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator screenOptions={globalScreenStyles}>
