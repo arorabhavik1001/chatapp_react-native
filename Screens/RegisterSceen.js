@@ -82,10 +82,7 @@ const RegisterSceen = ({ navigation }) => {
           onChangeText={(text) => setImgUrl(text)}
           onSubmitEditing={registerUser}
         /> */}
-        <Button 
-          title="Choose profile picture"
-          onPress={pickImage}
-        />
+        <Button title="Choose profile picture" onPress={pickImage} />
       </View>
       <Button
         title="Register"

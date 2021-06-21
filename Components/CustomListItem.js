@@ -14,7 +14,7 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
       .onSnapshot((snapshot) =>
         setMessage(snapshot.docs.map((doc) => doc.data()))
       );
-      return unsubscribe;
+    return unsubscribe;
   });
   return (
     <ListItem
@@ -25,7 +25,9 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
       <Avatar
         rounded
         source={{
-          uri: messsage?.[0]?.photoURL || "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
+          uri:
+            messsage?.[0]?.photoURL ||
+            "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
         }}
       />
       <ListItem.Content>
@@ -33,7 +35,7 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
           {chatName}
         </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
-          {messsage?.[0]?.displayName}: {messsage?.[0]?.message}
+          {messsage?.[0]?.displayName}: {messsage?.[0]?.subtitle}
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>

@@ -15,23 +15,21 @@ import { auth } from "../firebase";
 const Login = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [isAnimating, setIsAnimating] = useState(true);
-  const [isMatterShowing, setisMatterShowing] = useState(false);
+  // const [isAnimating, setIsAnimating] = useState(true);
+  // const [isMatterShowing, setisMatterShowing] = useState(false);
   const [password, setPassword] = useState("");
   const login = () => {
-    auth
-      .signInWithEmailAndPassword(email, password)
-      .catch((err) => {
-        if (err.code === "auth/user-not-found") {
-          alert(
-            `Wrong Credetials. If you haven't created an account, please register`
-          );
-        } 
-        // else if (err.code === "Can't find variable: imgUrl") {console.log(console.log(`ignore error img url`))}
-        else {
-          alert(err.message)
-        }
-      });
+    auth.signInWithEmailAndPassword(email, password).catch((err) => {
+      if (err.code === "auth/user-not-found") {
+        alert(
+          `Wrong Credetials. If you haven't created an account, please register`
+        );
+      }
+      // else if (err.code === "Can't find variable: imgUrl") {console.log(console.log(`ignore error img url`))}
+      else {
+        alert(err.message);
+      }
+    });
   };
   const taketoReg = () => {
     navigation.navigate("Register");
@@ -46,18 +44,18 @@ const Login = ({ navigation }) => {
     });
     return unsubscribe;
   }, []);
-  useEffect(() => {
-    var myVar;
-    myVar = setTimeout(() => {
-      setIsAnimating(false);
-      setisMatterShowing(true);
-    }, 2000);
+  // useEffect(() => {
+  //   var myVar;
+  //   myVar = setTimeout(() => {
+  //     setIsAnimating(false);
+  //     setisMatterShowing(true);
+  //   }, 2000);
 
-    // return clearTimeout(myVar)
-  }, []);
+  //   // return clearTimeout(myVar)
+  // }, []);
   return (
     <View style={styles.containerm}>
-      <ActivityIndicator
+      {/* <ActivityIndicator
         size="large"
         color="#03a203"
         style={{ height: 80 }}
@@ -65,57 +63,60 @@ const Login = ({ navigation }) => {
         animating={isAnimating}
       />
       <StatusBar style="light" />
-      {isMatterShowing ? (
-        <KeyboardAvoidingView style={styles.container} behavior={Platform.os === "ios"?"padding":"height"}>
-          <Image
-            source={{
-              uri: "https://i.ibb.co/2g8vFfb/logomain.png",
+      {isMatterShowing ? ( */}
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.os === "ios" ? "padding" : "height"}
+      >
+        <Image
+          source={{
+            uri: "https://i.ibb.co/2g8vFfb/logomain.png",
+          }}
+          style={{ width: 200, height: 200 }}
+          // transition={true}
+        />
+        <View style={styles.inputContainer}>
+          <Input
+            style={styles.input}
+            placeholder="Email"
+            type="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            leftIcon={{
+              type: "vector-icons",
+              name: "mail",
+              color: "#1a8f66",
             }}
-            style={{ width: 200, height: 200 }}
-            // transition={true}
           />
-          <View style={styles.inputContainer}>
-            <Input
-              style={styles.input}
-              placeholder="Email"
-              type="Email"
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              leftIcon={{
-                type: "vector-icons",
-                name: "mail",
-                color: "#1a8f66",
-              }}
-            />
-            <Input
-              placeholder="Password"
-              secureTextEntry={true}
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              leftIcon={{
-                type: "vector-icons",
-                name: "lock",
-                color: "#1a8f66",
-              }}
-            />
-          </View>
-          <Button
-            title="Login"
-            containerStyle={styles.button}
-            buttonStyle={styles.buttonb}
-            // raised={true}
-            onPress={login}
-            titleStyle={styles.btitle}
+          <Input
+            placeholder="Password"
+            secureTextEntry={true}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            leftIcon={{
+              type: "vector-icons",
+              name: "lock",
+              color: "#1a8f66",
+            }}
           />
-          <Button
-            title="Register"
-            type="clear"
-            titleStyle={styles.btitle2}
-            containerStyle={styles.button2}
-            onPress={taketoReg}
-          />
-        </KeyboardAvoidingView>
-      ) : null}
+        </View>
+        <Button
+          title="Login"
+          containerStyle={styles.button}
+          buttonStyle={styles.buttonb}
+          // raised={true}
+          onPress={login}
+          titleStyle={styles.btitle}
+        />
+        <Button
+          title="Register"
+          type="clear"
+          titleStyle={styles.btitle2}
+          containerStyle={styles.button2}
+          onPress={taketoReg}
+        />
+      </KeyboardAvoidingView>
+      {/* ) : null} */}
     </View>
   );
 };

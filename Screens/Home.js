@@ -7,17 +7,20 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { auth, db } from "../firebase";
-import { Button, Input, Text, Avatar } from "react-native-elements";
+import { Avatar } from "react-native-elements";
 import CustomListItem from "../Components/CustomListItem";
 import {
-  SimpleLineIcons,
-  AntDesign,
   MaterialCommunityIcons,
+  AntDesign,
+  SimpleLineIcons,
 } from "@expo/vector-icons";
 
 const Home = ({ navigation }) => {
-  const [chats, setChats] = useState([])
-  const [visible, setIsVisible] = useState(false);
+  const addChat = () => {
+    navigation.navigate("AddChat");
+  };
+  const [chats, setChats] = useState([]);
+  // const [visible, setIsVisible] = useState(false);
   const signiout = () => {
     auth
       .signOut()
@@ -35,20 +38,22 @@ const Home = ({ navigation }) => {
       });
   };
   const enterChat = (id, chatName) => {
-    navigation.navigate('Chat', {
+    navigation.navigate("Chat", {
       id: id,
       chatName: chatName,
-    })
-  }
+    });
+  };
   useEffect(() => {
-    const unsubscribe = db.collection('chats').onSnapshot(snapshot => (
-      setChats(snapshot.docs.map(doc => ({
-        id: doc.id,
-        data: doc.data()
-      })))
-    ))
+    const unsubscribe = db.collection("chats").onSnapshot((snapshot) =>
+      setChats(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    );
     return unsubscribe;
-  }, [])
+  }, []);
   const images = [
     {
       uri: auth?.currentUser?.photoURL,
@@ -57,6 +62,37 @@ const Home = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "BhavikUp",
+      headerRight: () => (
+        <View
+          style={{
+            marginLeft: 20,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: 80,
+            marginRight: 20,
+          }}
+        >
+          <TouchableOpacity>
+            <AntDesign
+              name="camerao"
+              size={24}
+              color="#0b5139"
+              onPress={() => alert("Feature coming soon")}
+              // style={{ marginRight: 10 }}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <SimpleLineIcons
+              name="pencil"
+              onPress={addChat}
+              size={24}
+              color="#0b5139"
+
+              // style={{ marginRight: 10 }}
+            />
+          </TouchableOpacity>
+        </View>
+      ),
       headerLeft: () => (
         <View
           style={{
@@ -69,7 +105,7 @@ const Home = ({ navigation }) => {
           }}
         >
           <TouchableOpacity>
-            <Avatar rounded source={{ uri: auth?.currentUser?.photoURL }}/>
+            <Avatar rounded source={{ uri: auth?.currentUser?.photoURL }} />
           </TouchableOpacity>
           <TouchableOpacity>
             <MaterialCommunityIcons
@@ -83,12 +119,17 @@ const Home = ({ navigation }) => {
         </View>
       ),
     });
-  });
+  }, []);
   return (
     <SafeAreaView>
       <ScrollView>
-        {chats.map(({id, data:{chatName}}) =>(
-          <CustomListItem key={id} id={id} chatName={chatName} enterChat={enterChat}/>
+        {chats.map(({ id, data: { chatName } }) => (
+          <CustomListItem
+            key={id}
+            id={id}
+            chatName={chatName}
+            enterChat={enterChat}
+          />
         ))}
       </ScrollView>
     </SafeAreaView>

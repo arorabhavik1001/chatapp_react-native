@@ -11,7 +11,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import { Avatar, Text, Icon, Input } from "react-native-elements";
+import { Avatar, Text, Icon, Input, Image } from "react-native-elements";
 import { AntDesign, FontAwesome, Ionicons, Feather } from "@expo/vector-icons";
 import * as firebase from "firebase";
 import { db, auth } from "../firebase";
@@ -38,7 +38,7 @@ const Chat = ({ navigation, route }) => {
           <Avatar
             source={{
               uri:
-                messsages[0]?.data.photoURL ||
+                messages[0]?.data.photoURL ||
                 "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
             }}
             rounded
@@ -63,6 +63,7 @@ const Chat = ({ navigation, route }) => {
               size={24}
               color="#0b5139"
               style={{ marginRight: 20 }}
+              onPress={() => alert("Feature coming soon")}
             />
           </TouchableOpacity>
           <TouchableOpacity>
@@ -71,24 +72,15 @@ const Chat = ({ navigation, route }) => {
               size={24}
               color="#0b5139"
               style={{ marginRight: 20 }}
+              onPress={() => alert("Feature coming soon")}
             />
           </TouchableOpacity>
         </View>
       ),
     });
   }, [navigation, messages]);
-  const sendMessage = () => {
-    Keyboard.dismiss();
-    db.collection("chats").doc(route.params.id).collection("messages").add({
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      message: chatInput,
-      displayName: auth.currentUser.displayName,
-      email: auth.currentUser.email,
-      photoURL: auth.currentUser.photoURL,
-    });
-    setChatInput("");
-  };
-  useLayoutEffect(() => {
+
+  useEffect(() => {
     const unsubscribe = db
       .collection("chats")
       .doc(route.params.id)
@@ -103,23 +95,22 @@ const Chat = ({ navigation, route }) => {
         )
       );
 
-    return unsubscribe;
-  }, [route]);
-  useEffect(() => {
-    const another = db
-      .collection("chats")
+    db.collection("chats")
       .doc(route.params.id)
       .collection("messages")
       .orderBy("timestamp", "desc")
       .onSnapshot((snapshot) =>
-      setMesssages(
+        setMesssages(
           snapshot.docs.map((doc) => ({
             id: doc.id,
             data: doc.data(),
           }))
         )
       );
+
+    return unsubscribe;
   }, [route]);
+
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
@@ -131,6 +122,7 @@ const Chat = ({ navigation, route }) => {
       }
     })();
   }, []);
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -139,20 +131,41 @@ const Chat = ({ navigation, route }) => {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
       setImgUrl(result.uri);
+      console.log(result.uri, "ok");
     }
-
+    sendImage(result.uri);
+  };
+  const sendMessage = () => {
+    Keyboard.dismiss();
     db.collection("chats").doc(route.params.id).collection("messages").add({
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      message: imgUrl, //try removing message and using another
+      message: chatInput,
+      subtitle: chatInput,
+      image: "",
       displayName: auth.currentUser.displayName,
       email: auth.currentUser.email,
       photoURL: auth.currentUser.photoURL,
     });
+    setChatInput("");
+    setImgUrl("");
   };
+  const sendImage = (imgURLL) => {
+    Keyboard.dismiss();
+    db.collection("chats").doc(route.params.id).collection("messages").add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      message: chatInput,
+      subtitle: "Image",
+      image: imgURLL,
+      displayName: auth.currentUser.displayName,
+      email: auth.currentUser.email,
+      photoURL: auth.currentUser.photoURL,
+    });
+    setChatInput("");
+    setImgUrl("");
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
@@ -172,6 +185,15 @@ const Chat = ({ navigation, route }) => {
                 data.email === auth.currentUser.email ? (
                   <View key={id} style={styles.reciever}>
                     <Text style={styles.receiverText}>{data.message}</Text>
+                    {data.image != "" ? (
+                      <Image
+                        source={{
+                          uri: data.image,
+                        }}
+                        style={{ width: 200, height: 200, borderRadius: 20 }}
+                        // transition={true}
+                      />
+                    ) : null}
                     <Avatar
                       containerStyle={{
                         position: "absolute",
@@ -202,14 +224,28 @@ const Chat = ({ navigation, route }) => {
                       rounded
                     />
                     <Text style={styles.senderText}>{data.message}</Text>
+                    {data.image != "" ? (
+                      <Image
+                        source={{
+                          uri: data.image,
+                        }}
+                        style={{ width: 200, height: 200, borderRadius: 20 }}
+                        // transition={true}
+                      />
+                    ) : null}
                     <Text style={styles.senderName}>{data.displayName}</Text>
                   </View>
                 )
               )}
             </ScrollView>
-            
+
             <View style={styles.footer}>
-              <Ionicons name="attach" size={24} color="#0b5139" onPress={pickImage} />
+              <Ionicons
+                name="attach"
+                size={24}
+                color="#0b5139"
+                onPress={pickImage}
+              />
               <TextInput
                 placeholder="Type a message..."
                 style={styles.input}
