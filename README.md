@@ -6,6 +6,7 @@ This is a chat app fully made in react native and powered by firebase. Main feat
 4) Chat components
 5) Profile Picture Option
 6) Login and Register functionality
-7) Image attatchment feature
-8) Expo icon pack
-9) Deployed to firebase
+7) Custom styled headers
+8) Image attatchment feature
+9) Expo icon pack
+10) Deployed to firebase
