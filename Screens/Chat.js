@@ -180,10 +180,12 @@ const Chat = ({ navigation, route }) => {
       .storage()
       .ref(`imgMessages/${moment().format()}.png`)
       .put(image)
-      .then(snapshot => snapshot.ref.getDownloadURL())
-      .then(url => {setImgSource(url)
-      console.log(url)})
-      .catch(error => {
+      .then((snapshot) => snapshot.ref.getDownloadURL())
+      .then((url) => {
+        setImgSource(url);
+        console.log(url);
+      })
+      .catch((error) => {
         alert(
           "Error uploading the image, other people might not be able to see the image"
         );
@@ -193,18 +195,16 @@ const Chat = ({ navigation, route }) => {
           "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png"
         );
       });
-
-
   };
 
   const urlToBlob = (uri) => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.onload = function() {
+      xhr.onload = function () {
         resolve(xhr.response);
       };
 
-      xhr.onerror = function() {
+      xhr.onerror = function () {
         reject(
           new Error(
             "Error uploading the image, other people might not be able to see the image"
@@ -296,8 +296,9 @@ const Chat = ({ navigation, route }) => {
                 name="attach"
                 size={24}
                 color="#0b5139"
-                onPress={pickImage}
-              />
+                // onPress={pickImage}
+                onPress={() => alert("Feature coming soon")}
+                />
               <TextInput
                 placeholder="Type a message..."
                 style={styles.input}

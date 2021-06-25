@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { auth, db } from "../firebase";
+import * as firebase from "firebase";
 import { Avatar } from "react-native-elements";
 import CustomListItem from "../Components/CustomListItem";
 import {
@@ -20,6 +21,7 @@ const Home = ({ navigation }) => {
     navigation.navigate("AddChat");
   };
   const [chats, setChats] = useState([]);
+  const [downloadedUrl, setDownloadedUrl] = useState("")
   // const [visible, setIsVisible] = useState(false);
   const signiout = () => {
     auth
@@ -52,6 +54,7 @@ const Home = ({ navigation }) => {
         }))
       )
     );
+    // uploadImage()
     return unsubscribe;
   }, []);
   const images = [
@@ -59,6 +62,54 @@ const Home = ({ navigation }) => {
       uri: auth?.currentUser?.photoURL,
     },
   ];
+
+  const uploadImage = async () => {
+    const tempPP = auth?.currentUser?.photoURL;
+    const name = auth?.currentUser?.name;
+    const image = await urlToBlob(tempPP);
+    firebase
+      .storage()
+      .ref(`profilePics/${name}.png`)
+      .put(image)
+      .then((snapshot) => snapshot.ref.getDownloadURL())
+      .then((url) => {
+        setDownloadedUrl(url);
+        console.log(url);
+        console.log(`url hai`, downloadedUrl)
+      })
+      .catch((error) => {
+        alert(
+          "Error uploading the image, other people might not be able to see the image"
+        );
+        console.log(`hua nhi`);
+        console.log(error);
+        setDownloadedUrl(
+          "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png"
+        );
+      });
+  };
+
+  const urlToBlob = (uri) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+
+      xhr.onerror = function () {
+        reject(
+          new Error(
+            "Error uploading the image, other people might not be able to see the image"
+          )
+        );
+      };
+
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "BhavikUp",
@@ -120,6 +171,7 @@ const Home = ({ navigation }) => {
       ),
     });
   }, []);
+
   return (
     <SafeAreaView>
       <ScrollView>

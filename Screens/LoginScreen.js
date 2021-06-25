@@ -10,7 +10,8 @@ import {
 import { Button, Input, Image } from "react-native-elements";
 import { StatusBar } from "expo-status-bar";
 import { Entypo, AntDesign } from "@expo/vector-icons";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import * as firebase from "firebase";
 
 const Login = ({ navigation }) => {
   const [name, setName] = useState("");
