@@ -16,6 +16,7 @@ import { AntDesign, FontAwesome, Ionicons, Feather } from "@expo/vector-icons";
 import * as firebase from "firebase";
 import { db, auth } from "../firebase";
 import * as ImagePicker from "expo-image-picker";
+import moment from "moment";
 
 const Chat = ({ navigation, route }) => {
   const scrollViewRef = useRef();
@@ -23,6 +24,11 @@ const Chat = ({ navigation, route }) => {
   const [messages, setMessages] = useState([]);
   const [messsages, setMesssages] = useState([]);
   const [imgUrl, setImgUrl] = useState("");
+  const [imgSource, setImgSource] = useState("");
+  const [imgArray, setImgArray] = useState([]);
+  useEffect(() => {
+    setImgArray([...imgArray, imgSource]);
+  }, [imgSource]);
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Chat",
@@ -55,6 +61,7 @@ const Chat = ({ navigation, route }) => {
           </Text>
         </View>
       ),
+      headerBackTitleVisible: false,
       headerRight: () => (
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TouchableOpacity>
@@ -153,17 +160,62 @@ const Chat = ({ navigation, route }) => {
   };
   const sendImage = (imgURLL) => {
     Keyboard.dismiss();
+    uploadImage(imgURLL);
     db.collection("chats").doc(route.params.id).collection("messages").add({
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       message: chatInput,
       subtitle: "Image",
-      image: imgURLL,
+      image: imgSource,
       displayName: auth.currentUser.displayName,
       email: auth.currentUser.email,
       photoURL: auth.currentUser.photoURL,
     });
+
     setChatInput("");
-    setImgUrl("");
+  };
+
+  const uploadImage = async (imgURLL) => {
+    const image = await urlToBlob(imgURLL);
+    firebase
+      .storage()
+      .ref(`imgMessages/${moment().format()}.png`)
+      .put(image)
+      .then(snapshot => snapshot.ref.getDownloadURL())
+      .then(url => {setImgSource(url)
+      console.log(url)})
+      .catch(error => {
+        alert(
+          "Error uploading the image, other people might not be able to see the image"
+        );
+        console.log(`hua nhi`);
+        console.log(error);
+        setImgSource(
+          "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png"
+        );
+      });
+
+
+  };
+
+  const urlToBlob = (uri) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
+      };
+
+      xhr.onerror = function() {
+        reject(
+          new Error(
+            "Error uploading the image, other people might not be able to see the image"
+          )
+        );
+      };
+
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
   };
 
   return (
